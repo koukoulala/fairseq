@@ -64,7 +64,7 @@ done
 for lg in en es fr de ru; do
     echo $lg
     mkdir -p ${DATA}/${lg}.spm.dest
-	python $CODE_ROOT/preprocess.py \
+	fairseq-preprocess  \
 	--source-lang src \
     --target-lang tgt \
     --only-source \
