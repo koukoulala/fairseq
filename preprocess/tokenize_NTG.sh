@@ -15,7 +15,7 @@ for lg in en es fr de ru; do
 	--source-lang src \
     --target-lang tgt \
     --only-source \
-	--testpref ${DATA}/${lg}.spm/$test.spm \
+	--testpref ${DATA}/${lg}.spm/test.spm \
 	--destdir ${DATA}/${lg}.spm.dest \
 	--thresholdtgt 0 \
 	--thresholdsrc 0 \
@@ -26,8 +26,7 @@ done
 
 for lg in en; do
     echo $lg
-    mkdir -p $DATA_BIN/$lg
-    python $CODE_ROOT/preprocess.py \
+    fairseq-preprocess \
     --source-lang src \
     --target-lang tgt \
     --trainpref ${DATA}/${lg}.spm/train.spm \
@@ -42,8 +41,7 @@ done
 
 for lg in es fr de ru; do
     echo $lg
-    mkdir -p $DATA_BIN/$lg
-    python $CODE_ROOT/preprocess.py \
+    fairseq-preprocess \
     --source-lang src \
     --target-lang tgt \
     --validpref ${DATA}/${lg}.spm/dev.spm \
