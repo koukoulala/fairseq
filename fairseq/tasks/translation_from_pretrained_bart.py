@@ -69,12 +69,12 @@ class TranslationFromPretrainedBARTTask(TranslationTask):
         Args:
             split (str): name of the split (e.g., train, valid, test)
         """
-        paths = utils.split_paths(self.args.data)
+        paths = utils.split_paths(self.cfg.data)
         assert len(paths) > 0
         data_path = paths[(epoch - 1) % len(paths)]
 
         # infer langcode
-        src, tgt = self.args.source_lang, self.args.target_lang
+        src, tgt = self.cfg.source_lang, self.cfg.target_lang
 
         self.datasets[split] = load_langpair_dataset(
             data_path,
@@ -84,27 +84,28 @@ class TranslationFromPretrainedBARTTask(TranslationTask):
             tgt,
             self.tgt_dict,
             combine=combine,
-            dataset_impl=self.args.dataset_impl,
-            upsample_primary=self.args.upsample_primary,
-            left_pad_source=self.args.left_pad_source,
-            left_pad_target=self.args.left_pad_target,
-            max_source_positions=getattr(self.args, "max_source_positions", 1024),
-            max_target_positions=getattr(self.args, "max_target_positions", 1024),
-            load_alignments=self.args.load_alignments,
-            prepend_bos=getattr(self.args, "prepend_bos", False),
+            dataset_impl=self.cfg.dataset_impl,
+            upsample_primary=self.cfg.upsample_primary,
+            left_pad_source=self.cfg.left_pad_source,
+            left_pad_target=self.cfg.left_pad_target,
+            max_source_positions=getattr(self.cfg, "max_source_positions", 1024),
+            max_target_positions=getattr(self.cfg, "max_target_positions", 1024),
+            load_alignments=self.cfg.load_alignments,
+            prepend_bos=getattr(self.cfg, "prepend_bos", False),
             append_source_id=True,
-            src_lang=self.args.source_language,
-            tgt_lang=self.args.target_language,
+            src_lang=self.cfg.source_language,
+            tgt_lang=self.cfg.target_language,
             shuffle=(split != "test")
         )
 
     def build_generator(self, models, args, **unused):
+        tgt_lang = args.target_language if args.target_language is not None else self.cfg.target_lang
         if getattr(args, "score_reference", False):
             from fairseq.sequence_scorer import SequenceScorer
 
             return SequenceScorer(
                 self.target_dictionary,
-                eos=self.tgt_dict.index("[{}]".format(self.args.target_lang)),
+                eos=self.tgt_dict.index("[{}]".format(tgt_lang)),
             )
         else:
             from fairseq.sequence_generator import SequenceGenerator
@@ -122,11 +123,11 @@ class TranslationFromPretrainedBARTTask(TranslationTask):
                 temperature=getattr(args, "temperature", 1.0),
                 match_source_len=getattr(args, "match_source_len", False),
                 no_repeat_ngram_size=getattr(args, "no_repeat_ngram_size", 0),
-                eos=self.tgt_dict.index("[{}]".format(self.args.target_lang)),
+                eos=self.tgt_dict.index("[{}]".format(tgt_lang)),
             )
 
     def build_dataset_for_inference(self, src_tokens, src_lengths, constraints=None):
-        src_lang_id = self.source_dictionary.index("[{}]".format(self.args.source_lang))
+        src_lang_id = self.source_dictionary.index("[{}]".format(self.cfg.source_lang))
         source_tokens = []
         for s_t in src_tokens:
             s_t = torch.cat([s_t, s_t.new(1).fill_(src_lang_id)])
