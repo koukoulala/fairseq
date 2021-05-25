@@ -47,6 +47,12 @@ class TranslationFromPretrainedBARTTask(TranslationTask):
         parser.add_argument('--prepend-bos', action='store_true',
                             help='prepend bos token to each sentence, which matches '
                                  'mBART pretraining')
+        parser.add_argument('--source-language', default='en_XX',
+                            help='prepend bos token to each sentence, which matches '
+                                 'mBART pretraining')
+        parser.add_argument('--target-language', default='en_XX',
+                            help='prepend bos token to each sentence, which matches '
+                                 'mBART pretraining')
         # fmt: on
 
     def __init__(self, args, src_dict, tgt_dict):
@@ -87,6 +93,9 @@ class TranslationFromPretrainedBARTTask(TranslationTask):
             load_alignments=self.args.load_alignments,
             prepend_bos=getattr(self.args, "prepend_bos", False),
             append_source_id=True,
+            src_lang=self.args.source_language,
+            tgt_lang=self.args.target_language,
+            shuffle=(split != "test")
         )
 
     def build_generator(self, models, args, **unused):

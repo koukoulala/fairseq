@@ -58,7 +58,12 @@ def load_langpair_dataset(
     shuffle=True,
     pad_to_multiple=1,
     prepend_bos_src=None,
+    src_lang="",
+    tgt_lang=""
 ):
+    if src_lang == "": src_lang = src
+    if tgt_lang == "": tgt_lang = tgt
+
     def split_exists(split, src, tgt, lang, data_path):
         filename = os.path.join(data_path, "{}.{}-{}.{}".format(split, src, tgt, lang))
         return indexed_dataset.dataset_exists(filename, impl=dataset_impl)
@@ -136,13 +141,13 @@ def load_langpair_dataset(
     eos = None
     if append_source_id:
         src_dataset = AppendTokenDataset(
-            src_dataset, src_dict.index("[{}]".format(src))
+            src_dataset, src_dict.index("[{}]".format(src_lang))
         )
         if tgt_dataset is not None:
             tgt_dataset = AppendTokenDataset(
-                tgt_dataset, tgt_dict.index("[{}]".format(tgt))
+                tgt_dataset, tgt_dict.index("[{}]".format(tgt_lang))
             )
-        eos = tgt_dict.index("[{}]".format(tgt))
+        eos = tgt_dict.index("[{}]".format(tgt_lang))
 
     align_dataset = None
     if load_alignments:
