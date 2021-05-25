@@ -1,7 +1,11 @@
 
-DATA=/home/work/xiaoyu/fairseq/data/NTG
-MODEL_DIR=/home/work/xiaoyu/fairseq/models/mbart.cc25.v2
-CODE_ROOT=/home/work/xiaoyu/fairseq
+CODE_ROOT=$1     # path to code root
+MODEL_DIR=$2     # path/to/saved_model_dir
+DATA=$3          # path/to/XGLUE/NTG
+
+#CODE_ROOT=/home/work/xiaoyu/fairseq
+#MODEL_DIR=/home/work/xiaoyu/fairseq/models/mbart.cc25.v2
+#DATA=/home/work/xiaoyu/fairseq/data/NTG
 
 SPE_MODEL=$MODEL_DIR/sentence.bpe.model
 DICT=$MODEL_DIR/dict.txt
@@ -51,7 +55,6 @@ for lg in en es fr de ru; do
     for split in test; do
         for pair in src; do
             echo $lg.$pair.$split
-            mkdir ${DATA}/${lg}.spm
             python $CODE_ROOT/scripts/spm_encode.py --model $SPE_MODEL \
                 --inputs ${DATA}/${lg}/$split.$pair --outputs ${DATA}/${lg}.spm/$split.spm.$pair
         done
@@ -68,7 +71,7 @@ for lg in en es fr de ru; do
 	--source-lang src \
     --target-lang tgt \
     --only-source \
-	--testpref ${DATA}/${lg}.spm/$test.spm \
+	--testpref ${DATA}/${lg}.spm/test.spm \
 	--destdir ${DATA}/${lg}.spm.dest \
 	--thresholdtgt 0 \
 	--thresholdsrc 0 \
@@ -79,8 +82,7 @@ done
 
 for lg in en; do
     echo $lg
-    mkdir -p $DATA_BIN/$lg
-    python $CODE_ROOT/preprocess.py \
+    fairseq-preprocess \
     --source-lang src \
     --target-lang tgt \
     --trainpref ${DATA}/${lg}.spm/train.spm \
@@ -95,8 +97,7 @@ done
 
 for lg in es fr de ru; do
     echo $lg
-    mkdir -p $DATA_BIN/$lg
-    python $CODE_ROOT/preprocess.py \
+    fairseq-preprocess \
     --source-lang src \
     --target-lang tgt \
     --validpref ${DATA}/${lg}.spm/dev.spm \
@@ -107,5 +108,6 @@ for lg in es fr de ru; do
     --tgtdict ${DICT} \
     --workers 70
 done
+
 
 echo "Done!"
