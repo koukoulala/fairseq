@@ -8,7 +8,7 @@ CODE_ROOT=$3   # path/to/code_root
 MODEL_DIR=$4   # path/to/model_dir
 OUTPUT_DIR=$5  # output dir to save checkpoints, decodings, etc 
 DATA_ROOT=$6   # path/to/XGLUE/NTG  
-
+language=$7
 
 PRETRAIN=$MODEL_DIR/mbart.cc25.v2
 
@@ -21,7 +21,7 @@ fairseq-train $DATA_BIN \
   --arch mbart_large --layernorm-embedding \
   --task translation_from_pretrained_bart \
   --source-lang src --target-lang tgt \
-  --source-language en_XX --target-language en_XX \
+  --source-language $language --target-language $language \
   --criterion label_smoothed_cross_entropy --label-smoothing 0.2 \
   --optimizer adam --adam-eps 1e-06 --adam-betas '(0.9, 0.98)' \
   --lr-scheduler polynomial_decay --lr 3e-05 --warmup-updates 2500 --total-num-update 40000 \
