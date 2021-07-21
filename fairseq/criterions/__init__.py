@@ -15,6 +15,13 @@ from fairseq.criterions.fairseq_criterion import (  # noqa
 from omegaconf import DictConfig
 
 
+tmp = registry.setup_registry(
+    "--criterion", base_class=FairseqCriterion, default="cross_entropy"
+)
+print("tmp", tmp)
+print()
+build_criterion_, register_criterion, CRITERION_REGISTRY, CRITERION_DATACLASS_REGISTRY = tmp
+'''
 (
     build_criterion_,
     register_criterion,
@@ -23,6 +30,7 @@ from omegaconf import DictConfig
 ) = registry.setup_registry(
     "--criterion", base_class=FairseqCriterion, default="cross_entropy"
 )
+'''
 
 
 def build_criterion(cfg: DictConfig, task):
