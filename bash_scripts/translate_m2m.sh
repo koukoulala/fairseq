@@ -21,7 +21,7 @@ fi
 # sacrebleu --echo src -l en-$lg -t $DATA_PATH | head -n 20 > $DATA_ROOT/raw_input.en-$lg.en
 
 for lang in en ; do
-  for pair in tgt src; do
+  for pair in en $lg; do
       echo $DATA_PATH.$pair
       python scripts/spm_encode.py \
           --model $SPE_MODEL \
@@ -33,12 +33,12 @@ done
 
 mkdir -p $DATA_ROOT/en.spm.dest
 fairseq-preprocess \
-    --source-lang src --target-lang tgt \
-    --trainpref $DATA_ROOT/spm.${lang} \
+    --source-lang en --target-lang $lg \
+    --only-source \
+    --testpref $DATA_ROOT/spm.en \
     --thresholdsrc 0 --thresholdtgt 0 \
     --destdir $DATA_ROOT/en.spm.dest \
     --srcdict $DATA_DICT  --tgtdict $DATA_DICT \
-    --workers 70
 
 echo "Done preprocess!"
 
@@ -46,7 +46,7 @@ DATA_BIN=$DATA_ROOT/en.spm.dest
 
 fairseq-generate \
     $DATA_BIN \
-    --batch-size 16 \
+    --batch-size 2 \
     --path $PRETRAIN \
     --fixed-dictionary $MODEL_DICT \
     -s en -t $lg \
@@ -55,8 +55,10 @@ fairseq-generate \
     --task translation_multi_simple_epoch \
     --lang-pairs $LANGUAGE_PAIR \
     --decoder-langtok --encoder-langtok src \
-    --gen-subset test  > results/gen_out_$lg
+    --gen-subset test  \
+    --skip-invalid-size-inputs-valid-test > results/gen_out_$lg
 
-cd ./examples/m2m_100
-cat results/gen_out_$lg | grep -P "^H" | sort -V | cut -f 3- | sh tok.sh $lg > results/hyp_$lg
+echo "Done generate!"
+cat ./results/gen_out_$lg | grep -P "^H" | sort -V | cut -f 3- | sh ./examples/m2m_100/tok.sh $lg > results/hyp_$lg
 
+echo "Done translate!"

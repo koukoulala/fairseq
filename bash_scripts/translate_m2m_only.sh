@@ -6,6 +6,7 @@ MODEL_DIR=$2   # path/to/model_dir
 DATA_ROOT=$3   # path/to/XGLUE/NTG
 ckpt_name=$4   # 418M_last_checkpoint.pt
 data_name=$5   # sampled_xglue.ntg.en.src.train
+CODE_DIR=$6
 
 PRETRAIN=$MODEL_DIR/$ckpt_name
 SPE_MODEL=$MODEL_DIR/spm.128k.model
@@ -19,10 +20,11 @@ if [ ! -x results/ ]; then
 fi
 
 DATA_BIN=$DATA_ROOT/en.spm.dest
+#DATA_BIN=$DATA_ROOT/en.spm.dest/train.src-tgt.src.bin
 
 fairseq-generate \
     $DATA_BIN \
-    --batch-size 16 \
+    --batch-size 2 \
     --path $PRETRAIN \
     --fixed-dictionary $MODEL_DICT \
     -s en -t $lg \
@@ -31,9 +33,11 @@ fairseq-generate \
     --task translation_multi_simple_epoch \
     --lang-pairs $LANGUAGE_PAIR \
     --decoder-langtok --encoder-langtok src \
-    --gen-subset train  > results/gen_out_$lg
+    --gen-subset test  \
+    --skip-invalid-size-inputs-valid-test > results/gen_out_$lg
 
+echo "Done generate!"
+cd ${CODE_DIR}/examples/m2m_100
+cat ${CODE_DIR}/results/gen_out_$lg | grep -P "^H" | sort -V | cut -f 3- | sh tok.sh fr > hyp
 
-cd ./examples/m2m_100
-cat results/gen_out_$lg | grep -P "^H" | sort -V | cut -f 3- | sh tok.sh $lg > results/hyp_$lg
-
+echo "Done translate!"
