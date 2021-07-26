@@ -18,8 +18,6 @@ if [ ! -x results/ ]; then
    mkdir results/
 fi
 
-# sacrebleu --echo src -l en-$lg -t $DATA_PATH | head -n 20 > $DATA_ROOT/raw_input.en-$lg.en
-
 for lang in en ; do
   for pair in en $lg; do
       echo $DATA_PATH.$pair

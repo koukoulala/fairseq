@@ -197,8 +197,9 @@ class FairseqTask(object):
                 (
                     "{:,} samples have invalid sizes and will be skipped, "
                     "max_positions={}, first few sample ids={}"
-                ).format(len(ignored), max_positions, ignored[:10])
+                ).format(len(ignored), max_positions, ignored[:])
             )
+
         return indices
 
     def can_reuse_epoch_itr(self, dataset):
