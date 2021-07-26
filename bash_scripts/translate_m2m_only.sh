@@ -6,6 +6,7 @@ MODEL_DIR=$2   # path/to/model_dir
 DATA_ROOT=$3   # path/to/XGLUE/NTG
 ckpt_name=$4   # 418M_last_checkpoint.pt
 data_name=$5   # sampled_xglue.ntg.en.src.train
+CODE_DIR=$6
 
 PRETRAIN=$MODEL_DIR/$ckpt_name
 SPE_MODEL=$MODEL_DIR/spm.128k.model
@@ -35,5 +36,8 @@ fairseq-generate \
     --gen-subset test  \
     --skip-invalid-size-inputs-valid-test > results/gen_out_$lg
 
-cat ./results/gen_out_$lg | grep -P "^H" | sort -V | cut -f 3- | sh ./examples/m2m_100/tok.sh $lg > results/hyp_$lg
+echo "Done generate!"
+cd ${CODE_DIR}/examples/m2m_100
+cat ${CODE_DIR}/results/gen_out_$lg | grep -P "^H" | sort -V | cut -f 3- | sh tok.sh fr > hyp
 
+echo "Done translate!"
