@@ -21,7 +21,7 @@ fi
 # sacrebleu --echo src -l en-$lg -t $DATA_PATH | head -n 20 > $DATA_ROOT/raw_input.en-$lg.en
 
 for lang in en ; do
-  for pair in tgt src; do
+  for pair in en $lg; do
       echo $DATA_PATH.$pair
       python scripts/spm_encode.py \
           --model $SPE_MODEL \
@@ -33,12 +33,12 @@ done
 
 mkdir -p $DATA_ROOT/en.spm.dest
 fairseq-preprocess \
-    --source-lang src --target-lang tgt \
-    --trainpref $DATA_ROOT/spm.${lang} \
+    --source-lang en --target-lang $lg \
+    --only-source \
+    --testpref $DATA_ROOT/spm.en \
     --thresholdsrc 0 --thresholdtgt 0 \
     --destdir $DATA_ROOT/en.spm.dest \
     --srcdict $DATA_DICT  --tgtdict $DATA_DICT \
-    --workers 70
 
 echo "Done preprocess!"
 

@@ -1,23 +1,8 @@
 nohup: ignoring input
-Traceback (most recent call last):
-  File "/home/work/anaconda3/envs/py3.6/bin/fairseq-generate", line 33, in <module>
-    sys.exit(load_entry_point('fairseq', 'console_scripts', 'fairseq-generate')())
-  File "/home/work/xiaoyu/fairseq/fairseq_cli/generate.py", line 404, in cli_main
-    main(args)
-  File "/home/work/xiaoyu/fairseq/fairseq_cli/generate.py", line 49, in main
-    return _main(cfg, sys.stdout)
-  File "/home/work/xiaoyu/fairseq/fairseq_cli/generate.py", line 106, in _main
-    task.load_dataset(cfg.dataset.gen_subset, task_cfg=saved_cfg.task)
-  File "/home/work/xiaoyu/fairseq/fairseq/tasks/translation_multi_simple_epoch.py", line 168, in load_dataset
-    **kwargs,
-  File "/home/work/xiaoyu/fairseq/fairseq/data/multilingual/multilingual_data_manager.py", line 1126, in load_dataset
-    split, training, epoch, combine, shard_epoch, **kwargs
-  File "/home/work/xiaoyu/fairseq/fairseq/data/multilingual/multilingual_data_manager.py", line 1102, in load_sampled_multi_dataset
-    split, training, epoch, combine, shard_epoch=shard_epoch, **kwargs
-  File "/home/work/xiaoyu/fairseq/fairseq/data/multilingual/multilingual_data_manager.py", line 1042, in load_split_datasets
-    split, epoch, shard_epoch=shard_epoch
-  File "/home/work/xiaoyu/fairseq/fairseq/data/multilingual/multilingual_data_manager.py", line 955, in get_split_data_param_list
-    paths, epoch, shard_epoch, split_num_shards_dict[key]
-KeyError: 'main:en-fr'
-cat: results/gen_out_fr: No such file or directory
-bash_scripts/translate_m2m_only.sh: line 38: results/hyp_fr: No such file or directory
+/home/work/anaconda3/envs/py3.6/lib/python3.6/site-packages/torch/_tensor.py:575: UserWarning: floor_divide is deprecated, and will be removed in a future version of pytorch. It currently rounds toward 0 (like the 'trunc' function NOT 'floor'). This results in incorrect rounding for negative values.
+To keep the current behavior, use torch.div(a, b, rounding_mode='trunc'), or for actual floor division, use torch.div(a, b, rounding_mode='floor'). (Triggered internally at  /pytorch/aten/src/ATen/native/BinaryOps.cpp:467.)
+  return torch.floor_divide(self, other)
+./examples/m2m_100/tok.sh: line 82: tokenizers/thirdparty/mosesdecoder/scripts/tokenizer/tokenizer.perl: No such file or directory
+./examples/m2m_100/tok.sh: line 82: tokenizers/thirdparty/mosesdecoder/scripts/tokenizer/normalize-punctuation.perl: No such file or directory
+./examples/m2m_100/tok.sh: line 82: tokenizers/thirdparty/mosesdecoder/scripts/tokenizer/remove-non-printing-char.perl: No such file or directory
+./examples/m2m_100/tok.sh: line 82: tokenizers/thirdparty/mosesdecoder/scripts/tokenizer/replace-unicode-punctuation.perl: No such file or directory

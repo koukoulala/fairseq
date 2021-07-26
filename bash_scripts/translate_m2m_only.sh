@@ -19,10 +19,11 @@ if [ ! -x results/ ]; then
 fi
 
 DATA_BIN=$DATA_ROOT/en.spm.dest
+#DATA_BIN=$DATA_ROOT/en.spm.dest/train.src-tgt.src.bin
 
 fairseq-generate \
     $DATA_BIN \
-    --batch-size 16 \
+    --batch-size 2 \
     --path $PRETRAIN \
     --fixed-dictionary $MODEL_DICT \
     -s en -t $lg \
@@ -31,9 +32,8 @@ fairseq-generate \
     --task translation_multi_simple_epoch \
     --lang-pairs $LANGUAGE_PAIR \
     --decoder-langtok --encoder-langtok src \
-    --gen-subset train  > results/gen_out_$lg
+    --gen-subset test  \
+    --skip-invalid-size-inputs-valid-test > results/gen_out_$lg
 
-
-cd ./examples/m2m_100
-cat results/gen_out_$lg | grep -P "^H" | sort -V | cut -f 3- | sh tok.sh $lg > results/hyp_$lg
+cat ./results/gen_out_$lg | grep -P "^H" | sort -V | cut -f 3- | sh ./examples/m2m_100/tok.sh $lg > results/hyp_$lg
 
