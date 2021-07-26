@@ -18,24 +18,31 @@ if [ ! -x results/ ]; then
    mkdir results/
 fi
 
-sacrebleu --echo src -l en-$lg -t $DATA_PATH | head -n 20 > $DATA_ROOT/raw_input.en-$lg.en
+# sacrebleu --echo src -l en-$lg -t $DATA_PATH | head -n 20 > $DATA_ROOT/raw_input.en-$lg.en
 
 for lang in en ; do
-    python scripts/spm_encode.py \
-        --model $SPE_MODEL \
-        --output_format=piece \
-        --inputs=$DATA_ROOT/raw_input.en-$lg.${lang} \
-        --outputs=$DATA_ROOT/spm.en-$lg.${lang}
+  for pair in tgt src; do
+      echo $DATA_PATH.$pair
+      python scripts/spm_encode.py \
+          --model $SPE_MODEL \
+          --output_format=piece \
+          --inputs=$DATA_PATH.$pair \
+          --outputs=$DATA_ROOT/spm.${lang}.$pair
+  done
 done
 
+mkdir -p $DATA_ROOT/en.spm.dest
 fairseq-preprocess \
-    --source-lang en --target-lang $lg \
-    --testpref $DATA_ROOT/spm.en-$lg.${lang} \
+    --source-lang src --target-lang tgt \
+    --trainpref $DATA_ROOT/spm.${lang} \
     --thresholdsrc 0 --thresholdtgt 0 \
-    --destdir $spm.en-$lg.${lang}.bin \
-    --srcdict $DATA_DICT --tgtdict $DATA_DICT
+    --destdir $DATA_ROOT/en.spm.dest \
+    --srcdict $DATA_DICT  --tgtdict $DATA_DICT \
+    --workers 70
 
-DATA_BIN=$DATA_ROOT/spm.de-$lg.${lang}.bin
+echo "Done preprocess!"
+
+DATA_BIN=$DATA_ROOT/en.spm.dest
 
 fairseq-generate \
     $DATA_BIN \
@@ -50,5 +57,6 @@ fairseq-generate \
     --decoder-langtok --encoder-langtok src \
     --gen-subset test  > results/gen_out_$lg
 
+cd ./examples/m2m_100
 cat results/gen_out_$lg | grep -P "^H" | sort -V | cut -f 3- | sh tok.sh $lg > results/hyp_$lg
 

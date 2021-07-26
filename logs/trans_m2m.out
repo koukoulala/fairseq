@@ -1,0 +1,38 @@
+nohup: ignoring input
+../datasets/trans/small_test.tgt
+skipped 0 empty lines
+filtered 0 lines
+../datasets/trans/small_test.src
+skipped 0 empty lines
+filtered 0 lines
+tmp (<function setup_registry.<locals>.build_x at 0x7f537970f378>, <function setup_registry.<locals>.register_x at 0x7f537970f2f0>, {}, {})
+
+2021-07-26 03:00:59 | INFO | fairseq_cli.preprocess | Namespace(align_suffix=None, alignfile=None, all_gather_list_size=16384, azureml_logging=False, bf16=False, bpe=None, cpu=False, criterion='cross_entropy', dataset_impl='mmap', destdir='../datasets/trans/en.spm.dest', empty_cache_freq=0, fp16=False, fp16_init_scale=128, fp16_no_flatten_grads=False, fp16_scale_tolerance=0.0, fp16_scale_window=None, joined_dictionary=False, log_file=None, log_format=None, log_interval=100, lr_scheduler='fixed', memory_efficient_bf16=False, memory_efficient_fp16=False, min_loss_scale=0.0001, model_parallel_size=1, no_progress_bar=False, nwordssrc=-1, nwordstgt=-1, only_source=False, optimizer=None, padding_factor=8, plasma_path='/tmp/plasma', profile=False, quantization_config_path=None, reset_logging=False, scoring='bleu', seed=1, simul_type=None, source_lang='src', srcdict='../ckpt/m2m_100/data_dict.128k.txt', suppress_crashes=False, target_lang='tgt', task='translation', tensorboard_logdir=None, testpref=None, tgtdict='../ckpt/m2m_100/data_dict.128k.txt', threshold_loss_scale=None, thresholdsrc=0, thresholdtgt=0, tokenizer=None, tpu=False, trainpref='../datasets/trans/spm.en', use_plasma_view=False, user_dir=None, validpref=None, wandb_project=None, workers=70)
+2021-07-26 03:01:01 | INFO | fairseq_cli.preprocess | [src] Dictionary: 128004 types
+2021-07-26 03:01:11 | INFO | fairseq_cli.preprocess | [src] ../datasets/trans/spm.en.src: 200 sents, 161333 tokens, 0.0905% replaced by <unk>
+2021-07-26 03:01:11 | INFO | fairseq_cli.preprocess | [tgt] Dictionary: 128004 types
+2021-07-26 03:01:20 | INFO | fairseq_cli.preprocess | [tgt] ../datasets/trans/spm.en.tgt: 200 sents, 3390 tokens, 0.0295% replaced by <unk>
+2021-07-26 03:01:20 | INFO | fairseq_cli.preprocess | Wrote preprocessed data to ../datasets/trans/en.spm.dest
+Done preprocess!
+Traceback (most recent call last):
+  File "/home/work/anaconda3/envs/py3.6/bin/fairseq-generate", line 33, in <module>
+    sys.exit(load_entry_point('fairseq', 'console_scripts', 'fairseq-generate')())
+  File "/home/work/xiaoyu/fairseq/fairseq_cli/generate.py", line 404, in cli_main
+    main(args)
+  File "/home/work/xiaoyu/fairseq/fairseq_cli/generate.py", line 49, in main
+    return _main(cfg, sys.stdout)
+  File "/home/work/xiaoyu/fairseq/fairseq_cli/generate.py", line 106, in _main
+    task.load_dataset(cfg.dataset.gen_subset, task_cfg=saved_cfg.task)
+  File "/home/work/xiaoyu/fairseq/fairseq/tasks/translation_multi_simple_epoch.py", line 168, in load_dataset
+    **kwargs,
+  File "/home/work/xiaoyu/fairseq/fairseq/data/multilingual/multilingual_data_manager.py", line 1126, in load_dataset
+    split, training, epoch, combine, shard_epoch, **kwargs
+  File "/home/work/xiaoyu/fairseq/fairseq/data/multilingual/multilingual_data_manager.py", line 1102, in load_sampled_multi_dataset
+    split, training, epoch, combine, shard_epoch=shard_epoch, **kwargs
+  File "/home/work/xiaoyu/fairseq/fairseq/data/multilingual/multilingual_data_manager.py", line 1042, in load_split_datasets
+    split, epoch, shard_epoch=shard_epoch
+  File "/home/work/xiaoyu/fairseq/fairseq/data/multilingual/multilingual_data_manager.py", line 955, in get_split_data_param_list
+    paths, epoch, shard_epoch, split_num_shards_dict[key]
+KeyError: 'main:en-fr'
+cat: results/gen_out_fr: No such file or directory
+bash_scripts/translate_m2m.sh: line 61: results/hyp_fr: No such file or directory
