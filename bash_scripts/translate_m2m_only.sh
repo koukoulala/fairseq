@@ -18,30 +18,6 @@ if [ ! -x results/ ]; then
    mkdir results/
 fi
 
-# sacrebleu --echo src -l en-$lg -t $DATA_PATH | head -n 20 > $DATA_ROOT/raw_input.en-$lg.en
-
-for lang in en ; do
-  for pair in tgt src; do
-      echo $DATA_PATH.$pair
-      python scripts/spm_encode.py \
-          --model $SPE_MODEL \
-          --output_format=piece \
-          --inputs=$DATA_PATH.$pair \
-          --outputs=$DATA_ROOT/spm.${lang}.$pair
-  done
-done
-
-mkdir -p $DATA_ROOT/en.spm.dest
-fairseq-preprocess \
-    --source-lang src --target-lang tgt \
-    --trainpref $DATA_ROOT/spm.${lang} \
-    --thresholdsrc 0 --thresholdtgt 0 \
-    --destdir $DATA_ROOT/en.spm.dest \
-    --srcdict $DATA_DICT  --tgtdict $DATA_DICT \
-    --workers 70
-
-echo "Done preprocess!"
-
 DATA_BIN=$DATA_ROOT/en.spm.dest
 
 fairseq-generate \
@@ -55,7 +31,8 @@ fairseq-generate \
     --task translation_multi_simple_epoch \
     --lang-pairs $LANGUAGE_PAIR \
     --decoder-langtok --encoder-langtok src \
-    --gen-subset test  > results/gen_out_$lg
+    --gen-subset train  > results/gen_out_$lg
+
 
 cd ./examples/m2m_100
 cat results/gen_out_$lg | grep -P "^H" | sort -V | cut -f 3- | sh tok.sh $lg > results/hyp_$lg
