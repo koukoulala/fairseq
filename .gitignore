@@ -22,6 +22,9 @@
 *.dcm
 *.pt
 
+results/
+logs/
+
 pycocotools/*
 results*.txt
 gcp_test*.sh
