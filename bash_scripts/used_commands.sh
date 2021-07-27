@@ -7,4 +7,5 @@ CUDA_VISIBLE_DEVICES=0,1 nohup bash bash_scripts/translate_m2m_mbart.sh fr_XX ..
 
 # 7.27
 CUDA_VISIBLE_DEVICES=1 nohup bash bash_scripts/translate_m2m_mbart_small.sh fr_XX ../ckpt/mbart50.ft.1n ../datasets/trans small_test.en &> logs/small_trans_m2m_mbart.out &
+CUDA_VISIBLE_DEVICES=1 nohup bash bash_scripts/translate_m2m_mbart_small.sh fr fr_XX ../ckpt/mbart50.ft.1n ../datasets/sampled_NTG 512 &> logs/trans_mbart.out &
 

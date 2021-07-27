@@ -1,64 +1,68 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT license.
 
-lg=$1          # translated to this language
-MODEL_DIR=$2   # path/to/model_dir
-DATA_ROOT=$3   # path/to/XGLUE/NTG
-data_name=$4   # small_test.en
+tgt_lg=$1      # translated to this language
+tgt_lg_mbart=$2
+MODEL_DIR=$3   # path/to/model_dir
+DATA_ROOT=$4   # path/to/XGLUE/NTG
+max_len=$5     # 512
 
+src_lg=en
+src_lg_mbart=en_XX
 PRETRAIN=$MODEL_DIR/model.pt
 lang_list=$MODEL_DIR/ML50_langs.txt
 SPE_MODEL=$MODEL_DIR/sentence.bpe.model
-DATA_DICT=$DATA_ROOT/dict.en_XX.txt
-DATA_PATH=$DATA_ROOT/$data_name
+DATA_DICT_SRC=$MODEL_DIR/dict.${src_lg_mbart}.txt
+DATA_DICT_TGT=$MODEL_DIR/dict.${tgt_lg_mbart}.txt
 
 if [ ! -x results/ ]; then
    mkdir results/
 fi
 
-# : << !
-for lang in en_XX ; do
+for pair in tgt src ; do
+    DATA_PATH=$DATA_ROOT/xglue.ntg.${src_lg}.$pair.train
     echo $DATA_PATH
     python scripts/spm_encode.py \
         --model $SPE_MODEL \
         --inputs=$DATA_PATH \
-        --outputs=$DATA_ROOT/small_spm_mbart.${lang}
+        --outputs=$DATA_ROOT/train.spm.$pair.${src_lg_mbart}
+
+  # Truncate source to 512
+  python ./bash_scripts/truncate_src.py --path $DATA_ROOT/train.spm.$pair.${src_lg_mbart} --max_len $max_len
+  echo "Done Truncate!"
+
+  DATA_BIN=$DATA_ROOT/train.bin.$pair.${src_lg}
+  if [ ! -x $DATA_BIN ]; then
+     mkdir $DATA_BIN
+  fi
+
+  fairseq-preprocess \
+      --source-lang ${src_lg_mbart} --target-lang ${tgt_lg_mbart} \
+      --only-source \
+      --testpref $DATA_ROOT/train.spm.$pair \
+      --thresholdsrc 0 \
+      --destdir $DATA_BIN \
+      --srcdict $DATA_DICT_SRC \
+
+  cp $DATA_DICT_SRC  $DATA_BIN/dict.${src_lg_mbart}.txt
+  cp $DATA_DICT_TGT  $DATA_BIN/dict.${tgt_lg_mbart}.txt
+
+  echo "Done preprocess!"
+
+  fairseq-generate \
+      $DATA_BIN \
+      --batch-size 4  \
+      --path $PRETRAIN \
+      -s ${src_lg_mbart} -t ${tgt_lg_mbart} \
+      --sacrebleu --remove-bpe 'sentencepiece' \
+      --task translation_multi_simple_epoch \
+      --decoder-langtok --encoder-langtok $pair \
+      --gen-subset test  \
+      --lang-dict $lang_list \
+      --lang-pairs ${src_lg_mbart}-${tgt_lg_mbart}  > results/mbart_gen_${tgt_lg}_${pair}
+
+  echo "Done generate!"
+  grep ^H results/mbart_gen_${tgt_lg}_${pair} | sort -n -k 2 -t '-' | cut -f 3 >results/xglue.ntg.${tgt_lg}.$pair.train
+
 done
-
-# Truncate source to 512
-python ./bash_scripts/truncate_src.py --path $DATA_ROOT/small_spm_mbart.${lang} --max_len 512
-
-
-if [ ! -x $DATA_ROOT/small_en_XX.spm_mbart.dest/ ]; then
-   mkdir $DATA_ROOT/small_en_XX.spm_mbart.dest/
-fi
-
-fairseq-preprocess \
-    --source-lang en_XX --target-lang $lg \
-    --only-source \
-    --testpref $DATA_ROOT/small_spm_mbart \
-    --thresholdsrc 0 --thresholdtgt 0 \
-    --destdir $DATA_ROOT/small_en_XX.spm_mbart.dest \
-    --srcdict $DATA_DICT  --tgtdict $DATA_DICT \
-
-echo "Done preprocess!"
-# !
-
-DATA_BIN=$DATA_ROOT/small_en_XX.spm_mbart.dest
-
-fairseq-generate \
-    $DATA_BIN \
-    --batch-size 4  \
-    --path $PRETRAIN \
-    -s en_XX -t $lg \
-    --sacrebleu --remove-bpe 'sentencepiece' \
-    --task translation_multi_simple_epoch \
-    --decoder-langtok --encoder-langtok src \
-    --gen-subset test  \
-    --lang-dict $lang_list \
-    --lang-pairs en_XX-fr_XX  > results/mbart_gen_out_${lg}_small
-
-echo "Done generate!"
-grep ^H results/mbart_gen_out_${lg}_small | sort -n -k 2 -t '-' | cut -f 3 >results/mbart_translated_${lg}_small
-
 echo "Done translate!"
