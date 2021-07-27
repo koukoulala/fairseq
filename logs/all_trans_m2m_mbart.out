@@ -1,0 +1,19 @@
+nohup: ignoring input
+../datasets/trans/sampled_xglue.ntg.en.src.train
+processed 10000 lines
+processed 20000 lines
+processed 30000 lines
+skipped 0 empty lines
+filtered 0 lines
+tmp (<function setup_registry.<locals>.build_x at 0x7f8969d95378>, <function setup_registry.<locals>.register_x at 0x7f8969d952f0>, {}, {})
+
+2021-07-26 11:11:26 | INFO | fairseq_cli.preprocess | Namespace(align_suffix=None, alignfile=None, all_gather_list_size=16384, azureml_logging=False, bf16=False, bpe=None, cpu=False, criterion='cross_entropy', dataset_impl='mmap', destdir='../datasets/trans/en_XX.spm_mbart.dest', empty_cache_freq=0, fp16=False, fp16_init_scale=128, fp16_no_flatten_grads=False, fp16_scale_tolerance=0.0, fp16_scale_window=None, joined_dictionary=False, log_file=None, log_format=None, log_interval=100, lr_scheduler='fixed', memory_efficient_bf16=False, memory_efficient_fp16=False, min_loss_scale=0.0001, model_parallel_size=1, no_progress_bar=False, nwordssrc=-1, nwordstgt=-1, only_source=True, optimizer=None, padding_factor=8, plasma_path='/tmp/plasma', profile=False, quantization_config_path=None, reset_logging=False, scoring='bleu', seed=1, simul_type=None, source_lang='en_XX', srcdict='../datasets/trans/dict.en_XX.txt', suppress_crashes=False, target_lang='fr_XX', task='translation', tensorboard_logdir=None, testpref='../datasets/trans/spm_mbart', tgtdict='../datasets/trans/dict.en_XX.txt', threshold_loss_scale=None, thresholdsrc=0, thresholdtgt=0, tokenizer=None, tpu=False, trainpref=None, use_plasma_view=False, user_dir=None, validpref=None, wandb_project=None, workers=1)
+2021-07-26 11:11:27 | INFO | fairseq_cli.preprocess | [en_XX] Dictionary: 250001 types
+2021-07-26 11:12:57 | INFO | fairseq_cli.preprocess | [en_XX] ../datasets/trans/spm_mbart.en_XX: 30000 sents, 21540963 tokens, 0.000422% replaced by <unk>
+2021-07-26 11:12:57 | INFO | fairseq_cli.preprocess | Wrote preprocessed data to ../datasets/trans/en_XX.spm_mbart.dest
+Done preprocess!
+/home/work/anaconda3/envs/py3.6/lib/python3.6/site-packages/torch/_tensor.py:575: UserWarning: floor_divide is deprecated, and will be removed in a future version of pytorch. It currently rounds toward 0 (like the 'trunc' function NOT 'floor'). This results in incorrect rounding for negative values.
+To keep the current behavior, use torch.div(a, b, rounding_mode='trunc'), or for actual floor division, use torch.div(a, b, rounding_mode='floor'). (Triggered internally at  /pytorch/aten/src/ATen/native/BinaryOps.cpp:467.)
+  return torch.floor_divide(self, other)
+Done generate!
+Done translate!
