@@ -52,9 +52,9 @@ fairseq-generate \
     --decoder-langtok --encoder-langtok src \
     --gen-subset test  \
     --lang-dict $lang_list \
-    --lang-pairs en_XX-fr_XX  > results/mbart_gen_out_$lg_all
+    --lang-pairs en_XX-fr_XX  > results/mbart_gen_out_${lg}_small
 
 echo "Done generate!"
-grep ^H results/mbart_gen_out_$lg | sort -n -k 2 -t '-' | cut -f 3 >results/mbart_translated_$lg_all
+grep ^H results/mbart_gen_out_${lg}_small | sort -n -k 2 -t '-' | cut -f 3 >results/mbart_translated_${lg}_small
 
 echo "Done translate!"

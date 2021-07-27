@@ -53,9 +53,9 @@ fairseq-generate \
     --gen-subset test  \
     --lang-dict $lang_list \
     --lang-pairs en_XX-fr_XX \
-    --skip-invalid-size-inputs-valid-test > results/mbart_gen_out_$lg_all
+    --skip-invalid-size-inputs-valid-test > results/mbart_gen_out_${lg}_all
 
 echo "Done generate!"
-grep ^H results/mbart_gen_out_$lg | sort -n -k 2 -t '-' | cut -f 3 >results/mbart_translated_$lg_all
+grep ^H results/mbart_gen_out_${lg}_all | sort -n -k 2 -t '-' | cut -f 3 >results/mbart_translated_${lg}_all
 
 echo "Done translate!"
