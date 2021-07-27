@@ -25,6 +25,10 @@ for lang in en_XX ; do
         --outputs=$DATA_ROOT/small_spm_mbart.${lang}
 done
 
+# Truncate source to 512
+python ./bash_scripts/truncate_src.py --path $DATA_ROOT/small_spm_mbart.${lang} --max_len 512
+
+
 if [ ! -x $DATA_ROOT/small_en_XX.spm_mbart.dest/ ]; then
    mkdir $DATA_ROOT/small_en_XX.spm_mbart.dest/
 fi
@@ -44,7 +48,7 @@ DATA_BIN=$DATA_ROOT/small_en_XX.spm_mbart.dest
 
 fairseq-generate \
     $DATA_BIN \
-    --max-sentences 2  \
+    --batch-size 4  \
     --path $PRETRAIN \
     -s en_XX -t $lg \
     --sacrebleu --remove-bpe 'sentencepiece' \
